@@ -1,6 +1,7 @@
 package com.example.simpleecom.service;
 
 import com.example.simpleecom.dto.RegisterRequest;
+import com.example.simpleecom.dto.UserDto;
 import com.example.simpleecom.entity.User;
 import com.example.simpleecom.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -34,4 +35,18 @@ public class AuthService {
         return userRepository.findAll();
     }
 
+    public UserDto getUserByUsername(String username) {
+        User tempUser =  userRepository.findByUsername(username).orElseThrow();
+        return userEntitytoDto(tempUser);
+    }
+
+    public UserDto userEntitytoDto(User user) {
+        UserDto tempUserDto = new UserDto();
+        tempUserDto.setId(user.getId());
+        tempUserDto.setUsername(user.getUsername());
+        tempUserDto.setEmail(user.getEmail());
+        tempUserDto.setRoles(user.getRoles());
+
+        return tempUserDto;
+    }
 }

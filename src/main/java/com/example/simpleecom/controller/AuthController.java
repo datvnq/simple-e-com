@@ -1,6 +1,7 @@
 package com.example.simpleecom.controller;
 
 import com.example.simpleecom.dto.RegisterRequest;
+import com.example.simpleecom.dto.UserDto;
 import com.example.simpleecom.entity.User;
 import com.example.simpleecom.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,10 @@ public class AuthController {
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return authService.getAllUsers();
+    }
+
+    @GetMapping("/user/{username}")
+    public UserDto getUserByUsername(@PathVariable String username) {
+        return authService.getUserByUsername(username);
     }
 }

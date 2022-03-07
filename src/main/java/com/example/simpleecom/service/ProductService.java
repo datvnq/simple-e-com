@@ -6,11 +6,13 @@ import com.example.simpleecom.entity.Product;
 import com.example.simpleecom.entity.ProductCategory;
 import com.example.simpleecom.repository.ProductCategoryRepository;
 import com.example.simpleecom.repository.ProductRepository;
+import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,11 +53,46 @@ public class ProductService {
         return result;
     }
 
+    public Long updateProduct(Long id, ProductDto productDto) {
+        Product tempProduct = productRepository.findById(id).orElseThrow();
+        tempProduct.setName(productDto.getName());
+        tempProduct.setDescription(productDto.getDescription());
+        tempProduct.setUnitPrice(productDto.getUnitPrice());
+        tempProduct.setUnitInStock(productDto.getUnitInStock());
+        tempProduct.setImageUrl(productDto.getImageUrl());
+        tempProduct.setCategory(productCategoryRepository.findById(productDto.getCategoryId()).orElseThrow());
+        Product updatedProduct = productRepository.save(tempProduct);
+
+        return updatedProduct.getId();
+    }
+
+    public Long createProduct(ProductDto productDto) {
+        productRepository.save(productDtoToEntity(productDto));
+        Product tempProduct = productRepository.findByName(productDto.getName()).orElseThrow();
+        return tempProduct.getId();
+    }
+
+    public Long deleteProduct(Long productId) {
+        Product tempProduct = productRepository.findById(productId).orElseThrow();
+        productRepository.delete(tempProduct);
+        return productId;
+    }
+
     public List<ProductCategoryDto> getAllProductCategories() {
         return productCategoryRepository.findAll()
                 .stream()
                 .map(this::productCategoryEntityToDto)
                 .collect(Collectors.toList());
+    }
+
+    public ProductCategory getCategoryById(Long id) {
+        return productCategoryRepository.findById(id).orElseThrow();
+    }
+
+    public Long createProductCategory(ProductCategoryDto productCategoryDto) {
+        productCategoryRepository.save(productCategoryDtoToEntity(productCategoryDto));
+        ProductCategory tempProductCategory = productCategoryRepository.findByCategoryName(productCategoryDto.getCategoryName()).orElseThrow();
+        return tempProductCategory.getId();
     }
 
     private ProductDto productEntityToDto(Product product) {
@@ -71,6 +108,17 @@ public class ProductService {
         return tempProductDto;
     }
 
+    private Product productDtoToEntity(ProductDto productDto) {
+        Product tempProduct = new Product();
+        tempProduct.setName(productDto.getName());
+        tempProduct.setDescription(productDto.getDescription());
+        tempProduct.setImageUrl(productDto.getImageUrl());
+        tempProduct.setUnitPrice(productDto.getUnitPrice());
+        tempProduct.setUnitInStock(productDto.getUnitInStock());
+        tempProduct.setCategory(getCategoryById(productDto.getCategoryId()));
+        return tempProduct;
+    }
+
     private ProductCategoryDto productCategoryEntityToDto(ProductCategory productCategory) {
         ProductCategoryDto tempProductCategoryDto = new ProductCategoryDto();
         tempProductCategoryDto.setId(productCategory.getId());
@@ -81,5 +129,12 @@ public class ProductService {
                 .collect(Collectors.toSet());
         tempProductCategoryDto.setProducts(productDtoSet);
         return tempProductCategoryDto;
+    }
+
+    private ProductCategory productCategoryDtoToEntity(ProductCategoryDto productCategoryDto) {
+        ProductCategory tempProductCategory = new ProductCategory();
+        tempProductCategory.setCategoryName(productCategoryDto.getCategoryName());
+        tempProductCategory.setProducts(new HashSet<>());
+        return tempProductCategory;
     }
 }
