@@ -9,8 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4300"})
 @RestController
 @RequestMapping("/api")
 @AllArgsConstructor
@@ -19,8 +20,11 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/products")
-    public List<ProductDto> getAllProducts() {
-        return productService.getAllProducts();
+    public ResponseEntity<Map<String, Object>> getAllProducts(@RequestParam(required = false) Long categoryId,
+                                                              @RequestParam(required = false) String keyword,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "12") int size) {
+        return productService.getAllProducts(categoryId, keyword, page, size);
     }
 
     @GetMapping("/product/{id}")
@@ -28,9 +32,12 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-    @GetMapping("/productCategory/{id}")
-    public List<ProductDto> getProductByCategoryId(@PathVariable Long id) {
-        return productService.getProductByCategoryId(id);
+    @GetMapping("/relatedProducts/{categoryId}/{productId}")
+    public ResponseEntity<Map<String, Object>> getRelatedProducts(@PathVariable Long categoryId,
+                                                                  @PathVariable Long productId,
+                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                  @RequestParam(defaultValue = "4") int size) {
+        return productService.getRelatedProducts(categoryId, productId, page, size);
     }
 
     @PutMapping("/product/{id}")
@@ -46,11 +53,6 @@ public class ProductController {
     @DeleteMapping("/product/{id}")
     public Long deleteProduct(@PathVariable Long id) {
         return productService.deleteProduct(id);
-    }
-
-    @GetMapping("/products/{keyword}")
-    public List<ProductDto> getProductsByKeyword(@PathVariable String keyword) {
-        return productService.getProductsByKeyword(keyword);
     }
 
     @GetMapping("/productCategories")

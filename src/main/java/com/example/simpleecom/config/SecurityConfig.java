@@ -15,10 +15,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.httpBasic();
+        httpSecurity.cors();
         httpSecurity.csrf().disable().authorizeRequests()
                 .antMatchers("/api/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/**").permitAll()
-                .and().formLogin().loginPage("/api/login").permitAll();
+                .antMatchers("/api/**").permitAll();
     }
 
     @Bean

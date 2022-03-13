@@ -6,15 +6,15 @@ import com.example.simpleecom.entity.Product;
 import com.example.simpleecom.entity.ProductCategory;
 import com.example.simpleecom.repository.ProductCategoryRepository;
 import com.example.simpleecom.repository.ProductRepository;
-import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,33 +24,73 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
 
-    public List<ProductDto> getAllProducts() {
-        return productRepository.findAll()
-                .stream()
-                .map(this::productEntityToDto)
-                .collect(Collectors.toList());
+    public ResponseEntity<Map<String, Object>> getAllProducts(Long categoryId, String keyword, int page, int size) {
+        try {
+            List<Product> products = new ArrayList<>();
+            Pageable paging = PageRequest.of(page, size);
+
+            Page<Product> pageProducts;
+
+            if (categoryId == null) {
+                if (keyword == null) {
+                    pageProducts = productRepository.findAll(paging);
+                }
+                else {
+                    pageProducts = productRepository.findByNameContaining(keyword, paging);
+                }
+                products = pageProducts.getContent();
+            }
+            else {
+                if (keyword == null) {
+                    pageProducts = productRepository.findByCategoryId(categoryId, paging);
+                    products = pageProducts.getContent();
+                }
+                else {
+                    pageProducts = productRepository.findByCategoryIdAndNameContaining(categoryId, keyword, paging);
+                    products = pageProducts.getContent();
+                }
+            }
+
+            List<ProductDto> productDtoList = products.stream().map(this::productEntityToDto).collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("productDtoList", productDtoList);
+            response.put("currentPage", pageProducts.getNumber());
+            response.put("totalItems", pageProducts.getTotalElements());
+            response.put("totalPages", pageProducts.getTotalPages());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     public ProductDto getProductById(Long id) {
         return productEntityToDto(productRepository.findById(id).orElseThrow());
     }
 
-    public List<ProductDto> getProductByCategoryId(Long id) {
-        ProductCategoryDto tempProductCategoryDto = productCategoryEntityToDto(productCategoryRepository.findById(id).orElseThrow());
-        return tempProductCategoryDto.getProducts().stream().collect(Collectors.toList());
-    }
+    public ResponseEntity<Map<String, Object>> getRelatedProducts(Long categoryId, Long productId, int page, int size) {
+        try {
+            List<Product> products = new ArrayList<>();
+            Pageable paging = PageRequest.of(page, size);
 
-    public List<ProductDto> getProductsByKeyword(String keyword) {
-        List<ProductDto> result = new ArrayList<>();
-        List<ProductDto> allProducts = getAllProducts();
-        if (keyword != null) {
-            for (ProductDto tempProductDto : allProducts) {
-                if (tempProductDto.getName().toLowerCase().contains(keyword.toLowerCase().trim())) {
-                    result.add(tempProductDto);
-                }
-            }
+            Page<Product> pageProducts;
+            pageProducts = productRepository.findByCategoryIdAndIdNot(categoryId, productId, paging);
+
+            products = pageProducts.getContent();
+            List<ProductDto> productDtoList = products.stream().map(this::productEntityToDto).collect(Collectors.toList());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("productDtoList", productDtoList);
+            response.put("currentPage", pageProducts.getNumber());
+            response.put("totalItems", pageProducts.getTotalElements());
+            response.put("totalPages", pageProducts.getTotalPages());
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result;
     }
 
     public Long updateProduct(Long id, ProductDto productDto) {
