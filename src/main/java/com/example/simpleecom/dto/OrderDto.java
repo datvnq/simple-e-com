@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -23,8 +24,7 @@ public class OrderDto {
     private String country;
     private String zipCode;
     private String note;
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private Date dateCreated;
+    private Instant dateCreated;
     private String customerFirstName;
     private String customerLastName;
     private String customerEmail;

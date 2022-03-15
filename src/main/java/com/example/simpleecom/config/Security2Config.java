@@ -14,8 +14,8 @@ public class Security2Config implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("Access-Control-Allow-Origin");
+                .allowedMethods("*")
+                .allowedOrigins("*");
     }
 
 

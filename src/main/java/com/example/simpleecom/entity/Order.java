@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,12 +45,11 @@ public class Order {
     private String zipCode;
     @Column(name = "note")
     private String note;
-    @CreationTimestamp
-    @Column(name = "date_created")
-    private Date dateCreated;
+    @Column(name = "date_created", columnDefinition = "timestamp")
+    private Instant dateCreated = Instant.now();
     @UpdateTimestamp
-    @Column(name = "last_updated")
-    private Date lastUpdated;
+    @Column(name = "last_updated", columnDefinition = "timestamp")
+    private Instant lastUpdated;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
     private Set<OrderItem> orderItems = new HashSet<>();
     @ManyToOne

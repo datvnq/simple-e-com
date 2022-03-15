@@ -5,6 +5,8 @@ import com.example.simpleecom.dto.ProductDto;
 import com.example.simpleecom.entity.Product;
 import com.example.simpleecom.service.ProductService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,11 +22,10 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<Map<String, Object>> getAllProducts(@RequestParam(required = false) Long categoryId,
-                                                              @RequestParam(required = false) String keyword,
-                                                              @RequestParam(defaultValue = "0") int page,
-                                                              @RequestParam(defaultValue = "12") int size) {
-        return productService.getAllProducts(categoryId, keyword, page, size);
+    public Page<ProductDto> getAllProducts(@RequestParam(required = false) Long categoryId,
+                                           @RequestParam(required = false) String keyword,
+                                           Pageable pageable) {
+        return productService.getAllProducts(categoryId, keyword, pageable);
     }
 
     @GetMapping("/product/{id}")
@@ -33,11 +34,10 @@ public class ProductController {
     }
 
     @GetMapping("/relatedProducts/{categoryId}/{productId}")
-    public ResponseEntity<Map<String, Object>> getRelatedProducts(@PathVariable Long categoryId,
-                                                                  @PathVariable Long productId,
-                                                                  @RequestParam(defaultValue = "0") int page,
-                                                                  @RequestParam(defaultValue = "4") int size) {
-        return productService.getRelatedProducts(categoryId, productId, page, size);
+    public Page<ProductDto> getRelatedProducts(@PathVariable Long categoryId,
+                                               @PathVariable Long productId,
+                                               Pageable pageable) {
+        return productService.getRelatedProducts(categoryId, productId, pageable);
     }
 
     @PutMapping("/product/{id}")

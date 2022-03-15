@@ -5,21 +5,14 @@ import com.example.simpleecom.dto.OrderItemDto;
 import com.example.simpleecom.entity.Customer;
 import com.example.simpleecom.entity.Order;
 import com.example.simpleecom.entity.OrderItem;
-import com.example.simpleecom.entity.Product;
 import com.example.simpleecom.repository.OrderRepository;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,35 +21,19 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    public ResponseEntity<Map<String, Object>> getAllOrders(String keyword, int page, int size) {
-        try {
-            List<Order> orders = new ArrayList<>();
-            Pageable paging = PageRequest.of(page, size);
+    public Page<OrderDto> getAllOrders(String keyword, Pageable pageable) {
 
-            Page<Order> pageOrders;
+        Page<Order> pageOrders;
 
-            if (keyword == null) {
-                pageOrders = orderRepository.findAll(paging);
-            }
-            else {
-                pageOrders = orderRepository.findByOrderTrackingNumberContaining(keyword, paging);
-            }
-
-            orders = pageOrders.getContent();
-
-            List<OrderDto> orderDtoList = orders.stream().map(this::orderEntityToDto).collect(Collectors.toList());
-
-            Map<String, Object> response = new HashMap<>();
-            response.put("orderDtoList", orderDtoList);
-            response.put("currentPage", pageOrders.getNumber());
-            response.put("totalItems", pageOrders.getTotalElements());
-            response.put("totalPages", pageOrders.getTotalPages());
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        if (keyword == null) {
+            pageOrders = orderRepository.findAll(pageable);
         }
-        catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        else {
+            pageOrders = orderRepository.findByOrderTrackingNumberContaining(keyword, pageable);
         }
+        Page<OrderDto> pageOrdersDto = pageOrders.map(this::orderEntityToDto);
+
+        return pageOrdersDto;
     }
 
     public OrderDto getOrderById(Long orderId) {
