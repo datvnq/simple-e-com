@@ -4,7 +4,6 @@ import com.example.simpleecom.dto.RegisterRequest;
 import com.example.simpleecom.dto.UserDto;
 import com.example.simpleecom.entity.User;
 import com.example.simpleecom.service.AuthService;
-import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,10 +11,13 @@ import java.util.List;
 //@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4300"})
 @RestController
 @RequestMapping("/api")
-@AllArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/signup")
     public void signUp(@RequestBody RegisterRequest registerRequest) {

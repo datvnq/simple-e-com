@@ -5,7 +5,6 @@ import com.example.simpleecom.dto.Purchase;
 import com.example.simpleecom.dto.PurchaseResponse;
 import com.example.simpleecom.dto.StateDto;
 import com.example.simpleecom.service.CheckoutService;
-import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,10 +12,13 @@ import java.util.List;
 //@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4300"})
 @RestController
 @RequestMapping("/api")
-@AllArgsConstructor
 public class CheckoutController {
 
     private final CheckoutService checkoutService;
+
+    public CheckoutController(CheckoutService checkoutService) {
+        this.checkoutService = checkoutService;
+    }
 
     @GetMapping("/countries")
     public List<CountryDto> getAllCountries() {

@@ -8,7 +8,6 @@ import com.example.simpleecom.entity.*;
 import com.example.simpleecom.repository.CountryRepository;
 import com.example.simpleecom.repository.CustomerRepository;
 import com.example.simpleecom.repository.StateRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,12 +17,17 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class CheckoutService {
 
     private final CountryRepository countryRepository;
     private final StateRepository stateRepository;
     private final CustomerRepository customerRepository;
+
+    public CheckoutService(CountryRepository countryRepository, StateRepository stateRepository, CustomerRepository customerRepository) {
+        this.countryRepository = countryRepository;
+        this.stateRepository = stateRepository;
+        this.customerRepository = customerRepository;
+    }
 
     public List<CountryDto> getAllCountries() {
         return countryRepository.findAll()

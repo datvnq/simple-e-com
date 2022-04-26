@@ -2,24 +2,23 @@ package com.example.simpleecom.controller;
 
 import com.example.simpleecom.dto.ProductCategoryDto;
 import com.example.simpleecom.dto.ProductDto;
-import com.example.simpleecom.entity.Product;
 import com.example.simpleecom.service.ProductService;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 //@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4300"})
 @RestController
 @RequestMapping("/api")
-@AllArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @GetMapping("/products")
     public Page<ProductDto> getAllProducts(@RequestParam(required = false) Long categoryId,

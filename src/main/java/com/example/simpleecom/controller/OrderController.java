@@ -3,7 +3,6 @@ package com.example.simpleecom.controller;
 import com.example.simpleecom.dto.OrderDto;
 import com.example.simpleecom.dto.OrderItemDto;
 import com.example.simpleecom.service.OrderService;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +12,13 @@ import java.util.List;
 //@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4300"})
 @RestController
 @RequestMapping("/api")
-@AllArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
+
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @GetMapping("/orders")
     public Page<OrderDto> getAllOrders(@RequestParam(required = false) String keyword,

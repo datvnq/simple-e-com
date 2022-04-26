@@ -2,7 +2,6 @@ package com.example.simpleecom.controller;
 
 import com.example.simpleecom.dto.FileUploadResponse;
 import com.example.simpleecom.service.FileStorageService;
-import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,10 +15,13 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api")
-@AllArgsConstructor
 public class FileController {
 
     private final FileStorageService fileStorageService;
+
+    public FileController(FileStorageService fileStorageService) {
+        this.fileStorageService = fileStorageService;
+    }
 
     @PostMapping("/upload")
     public FileUploadResponse fileUpload(@RequestParam("file")MultipartFile file) {

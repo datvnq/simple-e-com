@@ -1,30 +1,30 @@
 package com.example.simpleecom.service;
 
-import com.example.simpleecom.dto.OrderDto;
 import com.example.simpleecom.dto.ProductCategoryDto;
 import com.example.simpleecom.dto.ProductDto;
-import com.example.simpleecom.entity.Order;
 import com.example.simpleecom.entity.Product;
 import com.example.simpleecom.entity.ProductCategory;
 import com.example.simpleecom.repository.ProductCategoryRepository;
 import com.example.simpleecom.repository.ProductRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
     private final ProductCategoryRepository productCategoryRepository;
+
+    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository) {
+        this.productRepository = productRepository;
+        this.productCategoryRepository = productCategoryRepository;
+    }
 
     public Page<ProductDto> getAllProducts(Long categoryId, String keyword, Pageable pageable) {
 

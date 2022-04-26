@@ -6,20 +6,21 @@ import com.example.simpleecom.entity.Customer;
 import com.example.simpleecom.entity.Order;
 import com.example.simpleecom.entity.OrderItem;
 import com.example.simpleecom.repository.OrderRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class OrderService {
 
     private final OrderRepository orderRepository;
+
+    public OrderService(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 
     public Page<OrderDto> getAllOrders(String keyword, Pageable pageable) {
 
